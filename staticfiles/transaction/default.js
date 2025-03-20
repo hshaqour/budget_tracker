@@ -6,31 +6,8 @@ let monthlyTrendChart;
 document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ JavaScript file loaded correctly!");
 
-    // Check if buttons exist
-    const addButtons = [
-        document.getElementById('addTransactionBtn'),
-        document.getElementById('navAddTransactionBtn')
-    ];
-
-    console.log("Add Transaction Buttons found:", addButtons);
-
-    addButtons.forEach(button => {
-        if (button) {
-            button.addEventListener('click', showAddTransactionModal);
-            console.log(`✅ Click listener attached to button:`, button.id);
-        }
-    });
-
     // Initialize Bootstrap modal
-    const modalElement = document.getElementById('transactionModal');
-    console.log("Modal element found:", modalElement);
-    
-    try {
-        transactionModal = new bootstrap.Modal(document.getElementById('transactionModal'));
-        console.log("✅ Modal initialized");
-    } catch (error) {
-        console.error("❌ Error initializing modal:", error);
-    }
+    transactionModal = new bootstrap.Modal(document.getElementById('transactionModal'));
     
     // Initialize Chart.js for monthly trend
     const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
@@ -62,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Event listeners
+    document.getElementById('addTransactionBtn').addEventListener('click', showAddTransactionModal);
     document.getElementById('saveTransaction').addEventListener('click', saveTransaction);
     
     // Load initial data
