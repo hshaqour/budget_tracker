@@ -5,13 +5,16 @@ from django.urls import reverse
 
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
-from .models import User
+from .models import User, Transaction
+from .constants import TRANSACTION_CATEGORIES
 
 # Create your views here.
 
 
 def index(request):
-    return render(request, "transaction/index.html")
+    return render(request, "transaction/index.html", {
+        "TRANSACTION_CATEGORIES": TRANSACTION_CATEGORIES
+    })
 
 
 

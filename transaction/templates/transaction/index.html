@@ -1,4 +1,5 @@
 {% extends "transaction/layout.html" %}
+{% load static %}
 
 {% block title %}Dashboard - Budget Tracker{% endblock %}
 
@@ -106,13 +107,9 @@
                         <label class="form-label">Category</label>
                         <select class="form-select" id="category" required>
                             <option value="">Select a category</option>
-                            <option value="income">Income</option>
-                            <option value="food">Food</option>
-                            <option value="transportation">Transportation</option>
-                            <option value="housing">Housing</option>
-                            <option value="utilities">Utilities</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="other">Other</option>
+                            {% for value, label in TRANSACTION_CATEGORIES %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">

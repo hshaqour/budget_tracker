@@ -62,7 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Event listeners
-    document.getElementById('saveTransaction').addEventListener('click', saveTransaction);
+    const saveButton = document.getElementById('saveTransaction');
+    console.log("Save Transaction Button found:", saveButton);
+    if (saveButton) {
+        saveButton.addEventListener('click', saveTransaction);
+        console.log("✅ Click listener attached to Save Transaction button");
+    } else {
+        console.error("❌ Could not find Save Transaction button");
+    }
     
     // Load initial data
     loadDashboardData();
@@ -207,44 +214,71 @@ function showAddTransactionModal() {
     console.log("Transaction button clicked");
     document.getElementById('transactionForm').reset();
     document.getElementById('date').valueAsDate = new Date();
+    
+    // Add event listener to save button when modal is shown
+    const saveButton = document.getElementById('saveTransaction');
+    if (saveButton) {
+        saveButton.removeEventListener('click', saveTransaction); // Remove any existing listeners
+        saveButton.addEventListener('click', saveTransaction);
+        console.log("✅ Save button listener attached when modal opened");
+    }
+    
     transactionModal.show();
 }
 
 // Save transaction
-async function saveTransaction() {
+async function saveTransaction(event) {
+    // Prevent any default form submission
+    if (event) {
+        event.preventDefault();
+    }
+    
+    console.log("Save Transaction button clicked");
+    
     const form = document.getElementById('transactionForm');
+    console.log("Form found:", form);
+    
     if (!form.checkValidity()) {
+        console.log("Form validation failed");
         form.reportValidity();
         return;
     }
     
     const transactionData = {
         description: document.getElementById('description').value,
-        amount: document.getElementById('amount').value,
+        amount: parseFloat(document.getElementById('amount').value), // Ensure amount is a number
         category: document.getElementById('category').value,
         date: document.getElementById('date').value
     };
+    
+    console.log("Transaction data being sent:", transactionData);
     
     try {
         const response = await fetch('/api/transactions/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json'
             },
+            credentials: 'same-origin',
             body: JSON.stringify(transactionData)
         });
+        
+        console.log("Response status:", response.status);
         
         if (response.ok) {
             transactionModal.hide();
             loadDashboardData();
             showSuccess('Transaction added successfully');
         } else {
-            throw new Error('Failed to add transaction');
+            const errorData = await response.json();
+            console.error('Server error details:', errorData);
+            throw new Error(errorData.detail || 'Failed to add transaction');
         }
     } catch (error) {
         console.error('Error saving transaction:', error);
-        showError('Failed to save transaction');
+        showError(error.message || 'Failed to save transaction');
     }
 }
 
